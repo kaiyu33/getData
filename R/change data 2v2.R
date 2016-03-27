@@ -1,17 +1,22 @@
 library(dplyr)
+#'需修改:
+#'path有3個
 
-a<-dir("F:/000","csv")
+a<-dir("D:/data","csv")
 length.a<-length(a)
 
 
 for (m in 1:length.a) {
   
+  #運算是否為數字
   checknum<-0
   for(n in 1:4){
     if(substr(a[m],n,n)<=9&&substr(a[m],n,n)>=0){checknum<-checknum+1}
     }
+    
+   #讀取該檔案並轉存到"D:/data/new/"
   if(checknum==4&&substr(a[m],6,8)=="csv"){
-      x1_path<-paste("F:/000/",a[m],sep = "")
+      x1_path<-paste("D:/data/",a[m],sep = "")
     csvv<-read.csv(x1_path,header = FALSE,stringsAsFactors = FALSE)
     colnames(csvv)<-c("date","vol_S","vol_P","P_S","P_H","P_L","P_E","P_D","exc")
       
@@ -27,7 +32,7 @@ for (m in 1:length.a) {
                               ,sep = "/")
               )
   
-      new_path<-paste("F:/000/new/",a[m],".CSV",sep = "")
+      new_path<-paste("D:/data/new/",a[m],".CSV",sep = "")
       write.csv(B, file = new_path)
   }
 }
