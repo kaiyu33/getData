@@ -1,3 +1,5 @@
+#this file location F:/getData
+
 #install.packages("gdata")
 #library(gdata)
 #remove.packages("gdata")
@@ -10,24 +12,18 @@
 #start
 #install.packages("xlsx")
 library(xlsx)
-A<-read.xlsx("F:/1999Q1.xls",1)
-library(dplyr)
-slice(A,10:20)
-
-
-
 #disk location
 Upath<-paste0("F:/")
 #file location
-#x1_path<-paste0(Upath,"EXdata/FinancialInformation/1999Q1.xls")
 x1_path<-paste0(Upath,"1999Q1.xls")
+A<-read.xlsx(x1_path,1,encoding="UTF-8")
+library(dplyr)
+body<-slice(A,12:521)#body
+#count(unique(body)[2])
+#count(body)
+unique(body)#去除重複行(空白) 但是仍有一行空白
+unique(body)[2]
+View(A)
 
-read.xls("F:\1999Q1.xls", sheet=1)
 
-#read file
-csvv<-
-  read.csv(perl=F:/,x1_path,sheet =CC881, header = FALSE)
-csvv
-csvv<-select(csvv,"file"=V1)
-csvv<-mutate(csvv,"ID"=substring(csvv$file,1,4))
-#colnames(csvv)<-c("ID")
+
