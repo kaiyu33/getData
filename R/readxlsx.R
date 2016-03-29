@@ -29,8 +29,9 @@ FinancialInformation<-read.xlsx(FinancialInformationPath,1,encoding="UTF-8",stri
 library(dplyr)
 
 CheckSymbol_col2<-FinancialInformation[2]
+CheckSymbol_col3<-FinancialInformation[3]
 for (i in 1:20) {
-  CheckSymbol<-sapply(slice(CheckSymbol_col,i),"[",1)
+  CheckSymbol<-sapply(slice(CheckSymbol_col2,i),"[",1)
   i
   if (is.na(CheckSymbol)) {
     next
@@ -42,7 +43,7 @@ for (i in 1:20) {
 }
 #StartRowIndustry
 for (i in StartRowIndustry:(StartRowIndustry+5)) {
-  CheckSymbol<-sapply(slice(CheckSymbol_col,i),"[",1)
+  CheckSymbol<-sapply(slice(CheckSymbol_col2,i),"[",1)
   i
   if (is.na(CheckSymbol)) {
     next
@@ -54,33 +55,46 @@ for (i in StartRowIndustry:(StartRowIndustry+5)) {
 }
 #StartRowCompany
 
-body<-slice(FinancialInformation,StartRowIndustry:1000)#body col_517
+#body1<-slice(FinancialInformation,StartRowIndustry:1000)#body col_517
 #count(unique(body)[2])
-BodyRowNum<-sapply(count(body),"[",1)
+#BodyRowNum<-sapply(count(body1),"[",1)
 #unique(body[2])#去除重複行(空白) 但是仍有一行空白 col_513
 #unique(body)[2]
 #View(body)
 #A[12,2]
 
-CheckSymbol_col3<-FinancialInformation[3]
-DeleteRowNum<-NULL
-DeleteRowTotalNum<-0
-for (j in StartRowIndustry:BodyRowNum) {
-  CheckSymbol<-sapply(slice(CheckSymbol_col3,j),"[",1)
+#CheckSymbol_col3<-FinancialInformation[3]
+FIRowNum<-sapply(count(FinancialInformation),"[",1)
+DeleteRowNum<-NULL;
+DeleteRowTotalNum<-0;
+DeleteRowNum_BeforeEnd_StartRow<-1000;
+for (j in 1:FIRowNum) {#分成 產業 公司 及需刪除行 三種
+  CheckSymbol3<-sapply(slice(CheckSymbol_col3,j),"[",1)
+  CheckSymbol2<-sapply(slice(CheckSymbol_col2,j),"[",1)
   #col reduce-71  FinancialInformation[3]   營       業        收     入      		當季
   #col reduce-39  FinancialInformation[2]  公  司  名  稱 
-  if (is.na(CheckSymbol)|(regexec("^\ *$",CheckSymbol)[[1]][1]==1)) {
-    DeleteRowNum<-cbind(DeleteRowNum,j)
-    DeleteRowTotalNum=DeleteRowTotalNum+1
+  if(DeleteRowNum_BeforeEnd_StartRow>999){
+    if (is.na(CheckSymbol3)|is.na(CheckSymbol2)|grepl("^\ *$",CheckSymbol3)|StartRowIndustry>j) {
+      DeleteRowNum<-cbind(DeleteRowNum,j)
+      DeleteRowTotalNum=DeleteRowTotalNum+1
+    }
   }
-  if (regexec("^\ *(",CheckSymbol)[[1]][1]==1) {
+  if (grepl("^\ *[(]",CheckSymbol2)) {
     DeleteRowNum<-cbind(DeleteRowNum,j)
     DeleteRowTotalNum=DeleteRowTotalNum+1
-    DeleteRowNum
+    DeleteRowNum_BeforeEnd_StartRow<-j
+  }
+  if(j>DeleteRowNum_BeforeEnd_StartRow){
+    DeleteRowNum<-cbind(DeleteRowNum,j)
+    DeleteRowTotalNum=DeleteRowTotalNum+1
   }
 }
 
-body<-slice(FinancialInformation,-DeleteRowNum)
+body2<-slice(FinancialInformation,-DeleteRowNum);#colnum=528to439
+View(body2);
+
+
+
 #col reduce-71  FinancialInformation[3]   營       業        收     入      		當季
 #body col_517
 #col reduce-39  FinancialInformation[2]  公  司  名  稱
