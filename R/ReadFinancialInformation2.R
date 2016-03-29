@@ -4,7 +4,8 @@
 #'
 #'當按總共分成????階段
 #'階段一 1999Q1-2000Q1
-
+#'階段二 2000Q1-2004Q2
+#'階段三 2004Q2-
 
 #install.packages("xlsx")
 library(xlsx)
@@ -226,10 +227,12 @@ for (file_year in 1999:2014) {
     write.csv(body,file = body_path)
     write.csv(body_CompanyRowNum,file = body_CompanyRowNum_path)
     write.csv(body_IndustryRowNum,file = body_IndustryRowNum_path)
-    write.csv(body_CompanyRowNum_NAFI,file = body_CompanyRowNum_NAFI_path)
+    if(is.null(CompanyRowNum_NAFI)!=1){
+      write.csv(body_CompanyRowNum_NAFI,file = body_CompanyRowNum_NAFI_path)
+    }
     
     runtime<-proc.time()-starttime
-    print(paste(QNum,"FINISHED!"," ( ",runtime," ) "))
+    print(paste(file_year,"Q",file_QNum," , FINISHED!"," ( ",round(runtime[1],2),runtime[2],round(runtime[3],2)," ) "))    
     
   }
 }
