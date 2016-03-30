@@ -24,16 +24,15 @@ GetCheckSymbolCompany<-" 1101 台灣水泥  "
 
 starttime_all<-proc.time()
 #最大迴圈 跑各檔案
-runID<-0
+
 for (file_year in 1999:2014) {
   for (file_QNum in 1:4) {
     
-    runID<-runID+1
     print(paste0(file_year,"Q",file_QNum))
     
     starttime<-proc.time()
-    #file_year<-2003
-    #file_QNum<-1
+    #file_year<-2000
+    #file_QNum<-2
     
     #insert
     
@@ -44,7 +43,7 @@ for (file_year in 1999:2014) {
     FI_path<-paste0(Upath,"EXdata/FinancialInformation/",QNum)
     #read file
     FinancialInformation<-read.xlsx(FI_path,1,encoding="UTF-8",stringsAsFactors = FALSE)
-    print("A")
+    #print("A")
     
     #slice(FinancialInformation1999Q1,1:15)
     #slice(FinancialInformation2000Q2,1:15)
@@ -68,7 +67,7 @@ for (file_year in 1999:2014) {
     #'[1] "  OPERATING          REVENUES       "
     #'
     
-    for (i in 1:3) {
+    for (i in 1:3) {#'階段一 1999Q1-2000Q1
       for (j in 1:10) {
         if (grepl("CODE\ *[&]\ *NAME\ *$",FinancialInformation[[i]][j])) {
           namenum<-i;
@@ -76,11 +75,36 @@ for (file_year in 1999:2014) {
       }
     }
     
-    for (i in 1:3) {
+    for (i in (namenum:namenum+2)) {
       for (j in 1:10) {
         if (grepl("^\ *OPERATING\ *REVENUES\ *$",FinancialInformation[[i]][j])) {
           FInum<-i;
         }
+      }
+    }
+    
+    
+    
+    if(file_year>=2000){
+      if(file_QNum==2000&file_QNum==1){
+        
+        for (i in 1:3) {
+          for (j in 1:15) {
+            if (grepl("^[1]{2}$",FinancialInformation[[i]][j])) {
+              namenum<-i;
+              StartRowIndustry<-j;
+            }
+          }
+        }
+        
+        for (i in (namenum:namenum+2)) {
+          for (j in 1:10) {
+            if (grepl("^\ *OPERATING\ *REVENUES\ *$",FinancialInformation[[i]][j])) {
+              FInum<-i;
+            }
+          }
+        }
+        
       }
     }
     
@@ -90,15 +114,14 @@ for (file_year in 1999:2014) {
       FInum<-FInum-namenum+1
     }
     
-    print("B")
+    #print("B")
     
     CheckSymbol_col_name<-FinancialInformation[1]
     CheckSymbol_col_FI<-FinancialInformation[FInum]
     
-    StartRowIndustry<-NULL
+    StartRowIndustry<-NULL;
     for (i in 1:20) {
       CheckSymbolIndustry<-sapply(slice(CheckSymbol_col_name,i),"[",1)
-      i
       if (is.na(CheckSymbolIndustry)) {
         next
       }#SKIP
@@ -108,30 +131,7 @@ for (file_year in 1999:2014) {
       }
     }
     #StartRowIndustry
-    
-    
-    if(runID>=6){
-      for (i in 1:3) {
-        for (j in 1:15) {
-          if (grepl("^[1]{2}$",FinancialInformation[[i]][j])) {
-            namenum<-i;
-            StartRowIndustry<-j;
-          }
-        }
-      }
-      
-      for (i in (namenum:namenum+2)) {
-        for (j in 1:10) {
-          if (grepl("^\ *OPERATING\ *REVENUES\ *$",FinancialInformation[[i]][j])) {
-            FInum<-i;
-          }
-        }
-      }
-    }
-    
-    
-    
-    StartRowCompany<-NULL
+    StartRowCompany<-NULL;
     for (i in StartRowIndustry:(StartRowIndustry+5)) {
       CheckSymbolCompany<-sapply(slice(CheckSymbol_col_name,i),"[",1)
       i
@@ -154,7 +154,7 @@ for (file_year in 1999:2014) {
     #A[12,2]
     
     
-    print("C")
+    #print("C")
     
     #CheckSymbol_col_FI<-FinancialInformation[3]
     FIRowNum<-sapply(count(FinancialInformation),"[",1)
@@ -204,13 +204,13 @@ for (file_year in 1999:2014) {
       }
     }
     
-    print("D")
+    #print("D")
     
     
-#    body<-NULL
- #   body_CompanyRowNum<-NULL
-  #  body_IndustryRowNum<-NULL
-   # body_CompanyRowNum_NAFI<-NULL
+    #    body<-NULL
+    #   body_CompanyRowNum<-NULL
+    #  body_IndustryRowNum<-NULL
+    # body_CompanyRowNum_NAFI<-NULL
     
     body<-slice(FinancialInformation,-DeleteRowNum);#colnum=528to439
     body_CompanyRowNum<-slice(FinancialInformation,CompanyRowNum);#有公佈財報的公司               印  439
@@ -228,7 +228,7 @@ for (file_year in 1999:2014) {
     #body col_457
     #517-457 約60家截止前未交財報
     
-    print("E")
+    #print("E")
     
     #new file data
     #body<-slice(FinancialInformation,-DeleteRowNum);#colnum=528to439
@@ -237,10 +237,10 @@ for (file_year in 1999:2014) {
     #body_CompanyRowNum_NAFI<-slice(CheckSymbol_col_name,CompanyRowNum_NAFI);#沒有公佈財報的公司       印   20
     
     #clean write.csv file location
-#    body_path<-NULL
- #   body_CompanyRowNum_path<-NULL
-  #  body_IndustryRowNum_path<-NULL
-   # body_CompanyRowNum_NAFI_path<-NULL
+    #    body_path<-NULL
+    #   body_CompanyRowNum_path<-NULL
+    #  body_IndustryRowNum_path<-NULL
+    # body_CompanyRowNum_NAFI_path<-NULL
     
     #write.csv file location
     body_path<-paste0(Upath,"EXdata/FinancialInformation/FIData/",file_year,"Q",file_QNum,".csv")
@@ -255,8 +255,10 @@ for (file_year in 1999:2014) {
     write.csv(body_IndustryRowNum,file = body_IndustryRowNum_path)
     write.csv(body_CompanyRowNum_NAFI,file = body_CompanyRowNum_NAFI_path)
     
+    runtime<-NULL
     runtime<-proc.time()-starttime
-    print(paste(file_year,"Q",file_QNum," , FINISHED!"," ( ",round(runtime[1],2),runtime[2],round(runtime[3],2)," ) "))    
+    print(paste(file_year,"Q",file_QNum," , FINISHED!"," ( ",round(runtime[1],2),runtime[2],runtime[3]," ) "))
+    
   }
 }
 
