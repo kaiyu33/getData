@@ -1,11 +1,18 @@
 #start
+#'開發中版本
+#'正在進行合併中暫存版本
+#'內容較為完整 相關參照FinancialInformation1999Q12
+#'
 #'新增尋找欄位位置
 #'讀 寫檔案
 #'
 #'當按總共分成????階段
 #'階段一 1999Q1-2000Q1
-#'階段一 2000Q2-
-
+#'1-6
+#'階段二 2000Q1-2004Q2
+#'7-23
+#'2004Q2 runIDNum=23時 因為隱藏一列 FInum=4
+#'類股代號變動
 
 #install.packages("xlsx")
 library(xlsx)
@@ -25,86 +32,75 @@ GetCheckSymbolCompany<-" 1101 台灣水泥  "
 starttime_all<-proc.time()
 #最大迴圈 跑各檔案
 
-for (file_year in 1999:2014) {
+runID<-NULL
+for (file_year in 1999:2015) {
   for (file_QNum in 1:4) {
-    
-    print(paste0(file_year,"Q",file_QNum))
-    
-    starttime<-proc.time()
-    #file_year<-2000
-    #file_QNum<-2
-    
-    #insert
-    
-    
-    #file name
-    QNum<-paste0(file_year,"Q",file_QNum,".xls")
-    #file location
-    FI_path<-paste0(Upath,"EXdata/FinancialInformation/",QNum)
-    #read file
-    FinancialInformation<-read.xlsx(FI_path,1,encoding="UTF-8",stringsAsFactors = FALSE)
-    #print("A")
-    
-    #slice(FinancialInformation1999Q1,1:15)
-    #slice(FinancialInformation2000Q2,1:15)
-    
-    #在10*3的表格內尋找
-    #'> FinancialInformation2000Q2[[1]][2]
-    #'[1] "公司名稱 /nCODE &NAME"   /<-倒斜線
-    #'> FinancialInformation1999Q1[[2]][7]
-    #'[1] " 公  司  名  稱 "
-    #'> FinancialInformation1999Q1[[2]][8]
-    #'[1] " CODE  &  NAME  "
-    #'
-    #'> FinancialInformation2000Q2[[3]][2]
-    #'[1] "營業收入"
-    #'> FinancialInformation1999Q1[[3]][7]
-    #'[1] "  營       業        收     入      "
-    #'
-    #'> FinancialInformation2000Q2[[3]][3]
-    #'[1] "OPERATING REVENUES"
-    #'> FinancialInformation1999Q1[[3]][8]
-    #'[1] "  OPERATING          REVENUES       "
-    #'
-    
-    for (i in 1:3) {#'階段一 1999Q1-2000Q1
-      for (j in 1:10) {
-        if (grepl("CODE\ *[&]\ *NAME\ *$",FinancialInformation[[i]][j])) {
+    runID<-cbind(runID,paste0(file_year,"Q",file_QNum))
+  }
+}
+
+for (runIDNum in 23:67) {
+  print(runID[runIDNum])
+  
+  #file_year<-2002
+  #file_QNum<-2
+  #print(paste0(file_year,"Q",file_QNum))
+  
+  starttime<-proc.time()
+  
+  
+  #insert
+  
+  
+  #file name
+  #QNum<-paste0(file_year,"Q",file_QNum,".xls")
+  #file location
+  FI_path<-paste0(Upath,"EXdata/FinancialInformation/",runID[runIDNum],".xls")
+  #read file
+  FinancialInformation<-read.xlsx(FI_path,1,encoding="UTF-8",stringsAsFactors = FALSE)
+  print("A")
+  
+  #slice(FinancialInformation1999Q1,1:15)
+  #slice(FinancialInformation2000Q2,1:15)
+  
+  #在10*3的表格內尋找
+  #'> FinancialInformation2000Q2[[1]][2]
+  #'[1] "公司名稱 /nCODE &NAME"   /<-倒斜線
+  #'> FinancialInformation1999Q1[[2]][7]
+  #'[1] " 公  司  名  稱 "
+  #'> FinancialInformation1999Q1[[2]][8]
+  #'[1] " CODE  &  NAME  "
+  #'
+  #'> FinancialInformation2000Q2[[3]][2]
+  #'[1] "營業收入"
+  #'> FinancialInformation1999Q1[[3]][7]
+  #'[1] "  營       業        收     入      "
+  #'
+  #'> FinancialInformation2000Q2[[3]][3]
+  #'[1] "OPERATING REVENUES"
+  #'> FinancialInformation1999Q1[[3]][8]
+  #'[1] "  OPERATING          REVENUES       "
+  #'
+  
+  if(runIDNum>=6){
+    for (i in 1:3) {
+      for (j in 1:15) {
+        if (grepl("^[0,1]{2}$",FinancialInformation[[i]][j])) {
           namenum<-i;
+          StartRowIndustry<-j;
         }
       }
     }
     
-    for (i in (namenum:namenum+2)) {
+    for (i in 1:5) {
+      #runIDNum=23時 因為隱藏一列 FInum=4
       for (j in 1:10) {
         if (grepl("^\ *OPERATING\ *REVENUES\ *$",FinancialInformation[[i]][j])) {
           FInum<-i;
         }
-      }
-    }
-    
-    
-    
-    if(file_year>=2000){
-      if(file_QNum==2000&file_QNum==1){
-        
-        for (i in 1:3) {
-          for (j in 1:15) {
-            if (grepl("^[1]{2}$",FinancialInformation[[i]][j])) {
-              namenum<-i;
-              StartRowIndustry<-j;
-            }
-          }
+        if (grepl("^Operating Revenues$",FinancialInformation[[i]][j])) {
+          FInum<-i;
         }
-        
-        for (i in (namenum:namenum+2)) {
-          for (j in 1:10) {
-            if (grepl("^\ *OPERATING\ *REVENUES\ *$",FinancialInformation[[i]][j])) {
-              FInum<-i;
-            }
-          }
-        }
-        
       }
     }
     
@@ -114,36 +110,36 @@ for (file_year in 1999:2014) {
       FInum<-FInum-namenum+1
     }
     
-    #print("B")
+    print("B")
     
     CheckSymbol_col_name<-FinancialInformation[1]
     CheckSymbol_col_FI<-FinancialInformation[FInum]
     
-    StartRowIndustry<-NULL;
-    for (i in 1:20) {
-      CheckSymbolIndustry<-sapply(slice(CheckSymbol_col_name,i),"[",1)
-      if (is.na(CheckSymbolIndustry)) {
-        next
-      }#SKIP
-      if (GetCheckSymbolIndustry==CheckSymbolIndustry) {
-        StartRowIndustry<-i
-        #print(paste0("StartRowIndustry : ",StartRowIndustry))
-      }
-    }
-    #StartRowIndustry
-    StartRowCompany<-NULL;
-    for (i in StartRowIndustry:(StartRowIndustry+5)) {
-      CheckSymbolCompany<-sapply(slice(CheckSymbol_col_name,i),"[",1)
-      i
-      if (is.na(CheckSymbolCompany)) {
-        next
-      }#SKIP
-      if (GetCheckSymbolCompany==CheckSymbolCompany) {
-        StartRowCompany<-i
-        #print(paste0("StartRowCompany : ",StartRowCompany))
-      }
-    }
-    #StartRowCompany
+#    for (i in 1:20) {
+ #     CheckSymbolIndustry<-sapply(slice(CheckSymbol_col_name,i),"[",1)
+  #    i
+   #   if (is.na(CheckSymbolIndustry)) {
+    #    next
+     # }#SKIP
+#      if (GetCheckSymbolIndustry==CheckSymbolIndustry) {
+ #       StartRowIndustry<-i
+  #      #print(paste0("StartRowIndustry : ",StartRowIndustry))
+   #   }
+    #}
+#    #StartRowIndustry
+ #   for (i in StartRowIndustry:(StartRowIndustry+5)) {
+  #    CheckSymbolCompany<-sapply(slice(CheckSymbol_col_name,i),"[",1)
+   #   i
+    #  if (is.na(CheckSymbolCompany)) {
+     #   next
+      #}#SKIP
+#      if (GetCheckSymbolCompany==CheckSymbolCompany) {
+ #       StartRowCompany<-i
+  #      #print(paste0("StartRowCompany : ",StartRowCompany))
+   #   }
+    #}
+#    #StartRowCompany
+  
     
     #body1<-slice(FinancialInformation,StartRowIndustry:1000)#body col_517
     #count(unique(body)[2])
@@ -154,7 +150,7 @@ for (file_year in 1999:2014) {
     #A[12,2]
     
     
-    #print("C")
+    print("C")
     
     #CheckSymbol_col_FI<-FinancialInformation[3]
     FIRowNum<-sapply(count(FinancialInformation),"[",1)
@@ -185,9 +181,9 @@ for (file_year in 1999:2014) {
             DeleteRowTotalNum_NA=DeleteRowTotalNum+1;
           }
         }else if(grepl("^[0-9]*$",CheckSymbol3)){#有公佈財報
-          if(grepl("^\ [0-9]{4}",CheckSymbol2)){#有公佈財報的公司
+          if(grepl("^\ *[0-9]{4}",CheckSymbol2)){#有公佈財報的公司
             CompanyRowNum<-cbind(CompanyRowNum,j)
-          }else if(grepl("^\ {3}[0-9]{2}",CheckSymbol2)){#產業財報數據
+          }else if(grepl("^\ *{3}[0-9]{2}",CheckSymbol2)){#產業財報數據
             IndustryRowNum<-cbind(IndustryRowNum,j)
           }
         }
@@ -204,7 +200,7 @@ for (file_year in 1999:2014) {
       }
     }
     
-    #print("D")
+    print("D")
     
     
     #    body<-NULL
@@ -228,7 +224,7 @@ for (file_year in 1999:2014) {
     #body col_457
     #517-457 約60家截止前未交財報
     
-    #print("E")
+    print("E")
     
     #new file data
     #body<-slice(FinancialInformation,-DeleteRowNum);#colnum=528to439
@@ -243,24 +239,26 @@ for (file_year in 1999:2014) {
     # body_CompanyRowNum_NAFI_path<-NULL
     
     #write.csv file location
-    body_path<-paste0(Upath,"EXdata/FinancialInformation/FIData/",file_year,"Q",file_QNum,".csv")
-    body_CompanyRowNum_path<-paste0(Upath,"EXdata/FinancialInformation/FIData/",file_year,"Q",file_QNum,"_Company.csv")
-    body_IndustryRowNum_path<-paste0(Upath,"EXdata/FinancialInformation/FIData/",file_year,"Q",file_QNum,"_Industry.csv")
-    body_CompanyRowNum_NAFI_path<-paste0(Upath,"EXdata/FinancialInformation/FIData/",file_year,"Q",file_QNum,"_Company_NAFI.csv")
+    body_path<-paste0(Upath,"EXdata/FinancialInformation/FIData/",runID[runIDNum],".csv")
+    body_CompanyRowNum_path<-paste0(Upath,"EXdata/FinancialInformation/FIData/",runID[runIDNum],"_Company.csv")
+    body_IndustryRowNum_path<-paste0(Upath,"EXdata/FinancialInformation/FIData/",runID[runIDNum],"_Industry.csv")
+    body_CompanyRowNum_NAFI_path<-paste0(Upath,"EXdata/FinancialInformation/FIData/",runID[runIDNum],"_Company_NAFI.csv")
     
     
     #write.csv file
     write.csv(body,file = body_path)
     write.csv(body_CompanyRowNum,file = body_CompanyRowNum_path)
     write.csv(body_IndustryRowNum,file = body_IndustryRowNum_path)
-    write.csv(body_CompanyRowNum_NAFI,file = body_CompanyRowNum_NAFI_path)
+    if(is.null(CompanyRowNum_NAFI)!=1){
+      write.csv(body_CompanyRowNum_NAFI,file = body_CompanyRowNum_NAFI_path)
+    }
     
-    runtime<-NULL
     runtime<-proc.time()-starttime
-    print(paste(file_year,"Q",file_QNum," , FINISHED!"," ( ",round(runtime[1],2),runtime[2],runtime[3]," ) "))
-    
+    print(paste(runID[runIDNum]," , FINISHED!"," ( ",round(runtime[1],2),round(runtime[2],2),round(runtime[3],2)," ) "))  
   }
+    
 }
+
 
 
 runtime_all<-proc.time()-starttime

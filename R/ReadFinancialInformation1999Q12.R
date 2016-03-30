@@ -1,11 +1,15 @@
 #start
+#'開發中版本
+#'正在進行合併中暫存版本
+#'內容需再重整 更改 建議參照FinancialInformation2000Q22
+#'
 #'新增尋找欄位位置
 #'讀 寫檔案
 #'
 #'當按總共分成????階段
 #'階段一 1999Q1-2000Q1
-#'階段一 2000Q2-
-
+#'階段二 2000Q1-2004Q2
+#'階段三 2004Q2-
 
 #install.packages("xlsx")
 library(xlsx)
@@ -24,19 +28,27 @@ GetCheckSymbolCompany<-" 1101 台灣水泥  "
 
 starttime_all<-proc.time()
 #最大迴圈 跑各檔案
-runID<-0
-for (file_year in 1999:2014) {
-  for (file_QNum in 1:4) {
+
+
+    runID<-NULL
+    for (file_year in 1999:2015) {
+      for (file_QNum in 1:4) {
+        runID<-cbind(runID,paste0(file_year,"Q",file_QNum))
+      }
+    }
     
-    runID<-runID+1
-    print(paste0(file_year,"Q",file_QNum))
-    
-    starttime<-proc.time()
-    #file_year<-2003
-    #file_QNum<-1
-    
-    #insert
-    
+    for (runIDNum in 23:67) {
+      print(runID[runIDNum])
+      
+      #file_year<-2002
+      #file_QNum<-2
+      #print(paste0(file_year,"Q",file_QNum))
+      
+      starttime<-proc.time()
+      
+      
+      #insert
+      
     
     #file name
     QNum<-paste0(file_year,"Q",file_QNum,".xls")
@@ -44,7 +56,7 @@ for (file_year in 1999:2014) {
     FI_path<-paste0(Upath,"EXdata/FinancialInformation/",QNum)
     #read file
     FinancialInformation<-read.xlsx(FI_path,1,encoding="UTF-8",stringsAsFactors = FALSE)
-    print("A")
+    #print("A")
     
     #slice(FinancialInformation1999Q1,1:15)
     #slice(FinancialInformation2000Q2,1:15)
@@ -90,12 +102,11 @@ for (file_year in 1999:2014) {
       FInum<-FInum-namenum+1
     }
     
-    print("B")
+    #print("B")
     
     CheckSymbol_col_name<-FinancialInformation[1]
     CheckSymbol_col_FI<-FinancialInformation[FInum]
     
-    StartRowIndustry<-NULL
     for (i in 1:20) {
       CheckSymbolIndustry<-sapply(slice(CheckSymbol_col_name,i),"[",1)
       i
@@ -108,30 +119,6 @@ for (file_year in 1999:2014) {
       }
     }
     #StartRowIndustry
-    
-    
-    if(runID>=6){
-      for (i in 1:3) {
-        for (j in 1:15) {
-          if (grepl("^[1]{2}$",FinancialInformation[[i]][j])) {
-            namenum<-i;
-            StartRowIndustry<-j;
-          }
-        }
-      }
-      
-      for (i in (namenum:namenum+2)) {
-        for (j in 1:10) {
-          if (grepl("^\ *OPERATING\ *REVENUES\ *$",FinancialInformation[[i]][j])) {
-            FInum<-i;
-          }
-        }
-      }
-    }
-    
-    
-    
-    StartRowCompany<-NULL
     for (i in StartRowIndustry:(StartRowIndustry+5)) {
       CheckSymbolCompany<-sapply(slice(CheckSymbol_col_name,i),"[",1)
       i
@@ -154,7 +141,7 @@ for (file_year in 1999:2014) {
     #A[12,2]
     
     
-    print("C")
+    #print("C")
     
     #CheckSymbol_col_FI<-FinancialInformation[3]
     FIRowNum<-sapply(count(FinancialInformation),"[",1)
@@ -204,7 +191,7 @@ for (file_year in 1999:2014) {
       }
     }
     
-    print("D")
+    #print("D")
     
     
 #    body<-NULL
@@ -228,7 +215,7 @@ for (file_year in 1999:2014) {
     #body col_457
     #517-457 約60家截止前未交財報
     
-    print("E")
+    #print("E")
     
     #new file data
     #body<-slice(FinancialInformation,-DeleteRowNum);#colnum=528to439
@@ -253,11 +240,13 @@ for (file_year in 1999:2014) {
     write.csv(body,file = body_path)
     write.csv(body_CompanyRowNum,file = body_CompanyRowNum_path)
     write.csv(body_IndustryRowNum,file = body_IndustryRowNum_path)
-    write.csv(body_CompanyRowNum_NAFI,file = body_CompanyRowNum_NAFI_path)
+    if(is.null(CompanyRowNum_NAFI)!=1){
+      write.csv(body_CompanyRowNum_NAFI,file = body_CompanyRowNum_NAFI_path)
+    }
     
-    runtime<-NULL
     runtime<-proc.time()-starttime
     print(paste(file_year,"Q",file_QNum," , FINISHED!"," ( ",round(runtime[1],2),runtime[2],round(runtime[3],2)," ) "))    
+    
   }
 }
 
