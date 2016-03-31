@@ -1,7 +1,20 @@
 #start
 #'StockFI
 #'
-#'2014Q3
+#'繼承自:TotalTable
+#'
+#'階段一:將各財報會及於一個CSV檔
+#'從"F:/EXdata/FinancialInformation/FIData/TotalTable ' 1.xls ' "
+#'可見該表分成三個時期
+#'1999Q1-2000Q1-19欄
+#'runIDNum:1-5
+#'2000Q2-2014Q2-20欄
+#'runIDNum:6-62
+#'2014Q3-今-23欄
+#'runIDNum:63-67
+#'Net Income before Tax-3欄位-當季,YoY,Rate
+#'
+#'
 
 #install.packages("xlsx")
 library(xlsx)
@@ -27,6 +40,9 @@ for (runIDNum in 1:67) {
   #StockFI<-read.csv(FI_path,encoding="big5",stringsAsFactors = FALSE)#<-big5
   StockFI<-read.csv(FI_path,fileEncoding="UTF-8",stringsAsFactors = FALSE)#<-UTF-8
   
+  StockFI<-mutate(StockFI,"X"=runID[runIDNum])#須較colnames先執行
+  
+  
   FIName<-runID[runIDNum]
   FIName0<-runID[runIDNum-1]
   
@@ -51,19 +67,32 @@ for (runIDNum in 1:67) {
   R<-paste0("FlowRate")
   S<-paste0("QuickRate")
   
-  colnames(StockFI)<-c("X","ID_NAME",A,B,C,D,E,G,H,I,J,K,L,M,N,P,Q,R,S)
+  colnames(StockFI)<-c("Time","ID_NAME",A,B,C,D,E,G,H,I,J,K,L,M,N,P,Q,R,S)
+  #'runIDNum:1-5 6-62
   head(StockFI)
+  
   #用來判斷之欄位
-  CheckSymbol_col_name<-StockFI[2]
+  #CheckSymbol_col_name<-StockFI[2]
   
   class(StockFI[2])
   class(StockFI$"ID_NAME")
   
-  U<-strsplit(StockFI$"ID_NAME"," ")[[400]][1]
+  U<-strsplit(StockFI$"ID_NAME"," ")
+  NCOL(U)
+  
+  for (ID_NAME_Num in 1:10) {
+    grepl("[0-9}{4}",sapply(U[400], "[",ID_NAME_Num))
+  }
+  if (grepl("[0-9}{4}",U[[400]][2])) {
+    
+  }else if (strsplit(StockFI$"ID_NAME"," ")!="") {
+    
+  }
+  class(U)
+  U
   U==""
-  
-  
-  
+  length(U[400])
+  is.na(sapply(U[400], "[",5))
   #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
   #該年度無未公布財報
   if(namenum!=1){
