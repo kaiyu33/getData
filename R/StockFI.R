@@ -40,36 +40,58 @@ for (runIDNum in 1:67) {
   #StockFI<-read.csv(FI_path,encoding="big5",stringsAsFactors = FALSE)#<-big5
   StockFI<-read.csv(FI_path,fileEncoding="UTF-8",stringsAsFactors = FALSE)#<-UTF-8
   
-  StockFI<-mutate(StockFI,"X"=runID[runIDNum])#須較colnames先執行
-  
+  #StockFI<-mutate(StockFI,"X"=runID[runIDNum])#須較colnames先執行
+  #後面一起做即可
   
   FIName<-runID[runIDNum]
   FIName0<-runID[runIDNum-1]
   
-  A<-paste0("OR",FIName)
-  B<-paste0("OR",FIName0)
-  C<-paste0("OR",FIName,"Rate")
-  D<-paste0("Income",FIName)
-  E<-paste0("Income",FIName0)
+  A<-paste0("OR")
+  B<-paste0("OR")
+  C<-paste0("OR_Rate")
+  D<-paste0("Income")
+  E<-paste0("Income")
   
-  G<-paste0("nO_Income",FIName)
-  H<-paste0("nO_Income",FIName0)
-  I<-paste0("N_Income",FIName)
-  J<-paste0("N_Income",FIName0)
-  K<-paste0("N_Income",FIName,"Rate")
+  G<-paste0("nO_Income")
+  H<-paste0("nO_Income")
+  I<-paste0("N_Income")
+  J<-paste0("N_Income")
+  K<-paste0("N_Income_Rate")
   
   L<-paste0("Shared")
-  M<-paste0("N_Income_Shared",FIName)
-  N<-paste0("N_Income_Shared",FIName0)
+  M<-paste0("N_Income_Shared")
+  N<-paste0("N_Income_Shared")
   P<-paste0("NetPrice_Shared")
   Q<-paste0("NetPrice_totalAsset")
   
   R<-paste0("FlowRate")
   S<-paste0("QuickRate")
   
-  colnames(StockFI)<-c("Time","ID_NAME",A,B,C,D,E,G,H,I,J,K,L,M,N,P,Q,R,S)
+  colnames(StockFI)<-c("X","ID_NAME","OR","OR","OR_Rate",
+                       "Income","Income","nO_Income","nO_Income","N_Income","N_Income",
+                       "N_Income_Rate","Shared","N_Income_Shared","N_Income_Shared",
+                       "NetPrice_Shared","NetPrice_totalAsset","FlowRate","QuickRate" )#19欄位
+    c("X","ID_NAME",A,B,C,D,E,G,H,I,J,K,L,M,N,P,Q,R,S)
   #'runIDNum:1-5 6-62
   head(StockFI)
+  
+  if (runIDNum<=5) {
+    StockFI$"ID_NAME"<-gsub(" ",replacement="",StockFI$"ID_NAME")#取代-全部
+    #sub(" ",replacement="",sub(" ",replacement="",sub(" ",replacement="",StockFI$"ID_NAME")))#取代-一次,一部分-三次還是有可能有空白
+    
+    Id<-substr(StockFI$"ID_NAME", 1, 4)
+    Name<-substr(StockFI$"ID_NAME", 5,8)
+    
+    head(cbind(Id,Name,Time=runID[runIDNum],select(StockFI,-1:-2,-20)))
+    #刪除 X ID_NAME NA
+    #並建立 Id Name Time  
+  }else if (runIDNum<=62) {
+    
+  }else if (runIDNum>=63) {
+    
+  }
+
+  #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
   
   #用來判斷之欄位
   #CheckSymbol_col_name<-StockFI[2]
@@ -89,6 +111,7 @@ for (runIDNum in 1:67) {
     
   }
   class(U)
+  
   U
   U==""
   length(U[400])
