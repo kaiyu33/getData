@@ -14,7 +14,7 @@
 library(xlsx)
 library(dplyr)
 #disk location
-Upath<-paste0("D:/")
+Upath<-paste0("F:/")
 
 
 starttime_all<-proc.time()
@@ -155,11 +155,11 @@ for (runIDNum in 1:67) {
   
   
   #write.csv file
-  write.csv(body,file = body_path)
-  write.csv(body_CompanyRowNum,file = body_CompanyRowNum_path)
-  write.csv(body_IndustryRowNum,file = body_IndustryRowNum_path)
+  write.csv(body,file = body_path,fileEncoding="UTF-8")
+  write.csv(body_CompanyRowNum,file = body_CompanyRowNum_path,fileEncoding="UTF-8")
+  write.csv(body_IndustryRowNum,file = body_IndustryRowNum_path,fileEncoding="UTF-8")
   if(is.null(CompanyRowNum_NAFI)!=1){
-    write.csv(body_CompanyRowNum_NAFI,file = body_CompanyRowNum_NAFI_path)
+    write.csv(body_CompanyRowNum_NAFI,file = body_CompanyRowNum_NAFI_path,fileEncoding="UTF-8")
   }
   
   #顯示每次所需時間(秒)

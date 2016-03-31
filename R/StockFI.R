@@ -1,11 +1,12 @@
 #start
 #'
+#'2014Q3
 
 #install.packages("xlsx")
 library(xlsx)
 library(dplyr)
 #disk location
-Upath<-paste0("D:/")
+Upath<-paste0("F:/")
 
 runID<-NULL
 for (file_year in 1999:2015) {
@@ -22,38 +23,47 @@ for (runIDNum in 1:67) {
   #file location
   FI_path<-paste0(Upath,"EXdata/FinancialInformation/FIData/",runID[runIDNum],"_Company.csv")
   #read file
-  StockFI<-read.csv(FI_path,encoding="big5",stringsAsFactors = FALSE)#<-big5
+  #StockFI<-read.csv(FI_path,encoding="big5",stringsAsFactors = FALSE)#<-big5
+  StockFI<-read.csv(FI_path,fileEncoding="UTF-8",stringsAsFactors = FALSE)#<-UTF-8
   
   FIName<-runID[runIDNum]
   FIName0<-runID[runIDNum-1]
+  
   A<-paste0("OR",FIName)
   B<-paste0("OR",FIName0)
   C<-paste0("OR",FIName,"Rate")
   D<-paste0("Income",FIName)
   E<-paste0("Income",FIName0)
+  
   G<-paste0("nO_Income",FIName)
   H<-paste0("nO_Income",FIName0)
   I<-paste0("N_Income",FIName)
   J<-paste0("N_Income",FIName0)
   K<-paste0("N_Income",FIName,"Rate")
+  
   L<-paste0("Shared")
   M<-paste0("N_Income_Shared",FIName)
   N<-paste0("N_Income_Shared",FIName0)
   P<-paste0("NetPrice_Shared")
   Q<-paste0("NetPrice_totalAsset")
+  
   R<-paste0("FlowRate")
   S<-paste0("QuickRate")
   
-  colnames(StockFI)<-c("X",A,B,C,D,E,G,H,I,J,K,L,M,N,P,Q,R,S)
+  colnames(StockFI)<-c("X","ID_NAME",A,B,C,D,E,G,H,I,J,K,L,M,N,P,Q,R,S)
   head(StockFI)
   #用來判斷之欄位
   CheckSymbol_col_name<-StockFI[2]
   
   class(StockFI[2])
-  class(StockFI$OR1999Q2)
+  class(StockFI$"ID_NAME")
   
-  strsplit(StockFI$台.灣.證.券.交.易.所.上.市.公.司.財.務.資.料.簡.報.," ")
+  U<-strsplit(StockFI$"ID_NAME"," ")[[400]][1]
+  U==""
   
+  
+  
+  #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
   #該年度無未公布財報
   if(namenum!=1){
     DelteDataNum<-namenum-1
