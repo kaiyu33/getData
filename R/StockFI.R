@@ -20,7 +20,7 @@
 library(xlsx)
 library(dplyr)
 #disk location
-Upath<-paste0("F:/")
+Upath<-paste0("D:/")
 
 runID<-NULL
 for (file_year in 1999:2015) {
@@ -29,10 +29,14 @@ for (file_year in 1999:2015) {
   }
 }
 runIDNum<-1
+#runIDNum<-6
+#runIDNum<-63
+body1<-NULL
+body2<-NULL
 for (runIDNum in 1:67) {
   print(runID[runIDNum])
   
-  starttime<-proc.time()
+  #starttime<-proc.time()
   
   #file location
   FI_path<-paste0(Upath,"EXdata/FinancialInformation/FIData/",runID[runIDNum],"_Company.csv")
@@ -43,9 +47,103 @@ for (runIDNum in 1:67) {
   #StockFI<-mutate(StockFI,"X"=runID[runIDNum])#須較colnames先執行
   #後面一起做即可
   
-  FIName<-runID[runIDNum]
-  FIName0<-runID[runIDNum-1]
+  #'runIDNum:1-5 6-62
+  head(StockFI)
   
+  if (runIDNum<=5) {
+    colnames(StockFI)<-c("X","ID_NAME","OR","OR_YoY","OR_Rate",
+                         "Income","Income_YoY","nO_Income","nO_Income_YoY","N_Income","N_Income_YoY",
+                         "N_Income_Rate","Shared","N_Income_Shared","N_Income_Shared_YoY",
+                         "NetPrice_Shared","NetPrice_totalAsset","FlowRate","QuickRate" )#19欄位
+    
+    StockFI$"ID_NAME"<-gsub(" ",replacement="",StockFI$"ID_NAME")#取代-全部
+    #sub(" ",replacement="",sub(" ",replacement="",sub(" ",replacement="",StockFI$"ID_NAME")))#取代-一次,一部分-三次還是有可能有空白
+    
+    Id<-substr(StockFI$"ID_NAME", 1, 4)
+    Name<-substr(StockFI$"ID_NAME", 5,8)
+    #H_StockFI<-head(cbind(Id,Name,Time=runID[runIDNum],select(StockFI,-1:-2,-20)))
+    #準備匯出資料
+    StockFI<-cbind(Id,Name,Time=runID[runIDNum],select(StockFI,-1:-2,-20,-30))
+    #刪除 X ID_NAME NA
+    #並建立 Id Name Time  
+    body1<-rbind(body1,StockFI)
+  }else if (runIDNum<=62) {
+    #無效欄位名:1 是為了DEBUG runIDNum=30 兩個NA
+    if (NROW(colnames(StockFI))<=20) {
+      colnames(StockFI)<-c("X","Id","Name","OR","OR_YoY","OR_Rate",
+                           "Income","Income_YoY","nO_Income","nO_Income_YoY","N_Income","N_Income_YoY",
+                           "N_Income_Rate","Shared","N_Income_Shared","N_Income_Shared_YoY",
+                           "NetPrice_Shared","NetPrice_totalAsset","FlowRate","QuickRate")#20欄位
+    }else if (NROW(colnames(StockFI))>=21) {
+      colnames(StockFI)<-c("X","Id","Name","OR","OR_YoY","OR_Rate",
+                           "Income","Income_YoY","nO_Income","nO_Income_YoY","N_Income","N_Income_YoY",
+                           "N_Income_Rate","Shared","N_Income_Shared","N_Income_Shared_YoY",
+                           "NetPrice_Shared","NetPrice_totalAsset","FlowRate","QuickRate","1")#20欄位 1為無效欄位名
+    }
+   
+    #準備匯出資料
+    #select(StockFI,2,4:20)
+    StockFI<-cbind(select(StockFI,2,3),Time=runID[runIDNum],select(StockFI,-1:-3,-21:-30))
+    body1<-rbind(body1,StockFI)
+  }else if (runIDNum>=63) {
+    colnames(StockFI)<-c("X","Id","Name","OR","OR_YoY","OR_Rate",
+                         "Income","Income_YoY","nO_Income","nO_Income_YoY","N_Income","N_Income_YoY",
+                         "N_Income_Rate","Shared","N_Income_Shared","N_Income_Shared_YoY",
+                         "NetPrice_Shared","NetPrice_totalAsset","FlowRate","QuickRate","NetIncome_bTax",
+                         "NetIncome_bTax_YoY","NetIncome_bTax_Rate")#23欄位
+    #準備匯出資料
+    StockFI2<-cbind(select(StockFI,2,3),Time=runID[runIDNum],select(StockFI,-1:-3,-24)) 
+    StockFI<-cbind(select(StockFI,2,3),Time=runID[runIDNum],select(StockFI,-1:-3,-21:-23)) 
+    
+    body2<-rbind(body2,StockFI2)
+    body1<-rbind(body1,StockFI)
+  }
+  #NROW(colnames(StockFI))
+  #匯出20欄位 如下
+  #'[1] "Id"                  "Name"            "Time"                "OR"                  "OR_YoY"            "OR_Rate"      
+  #'[7] "Income"              "Income_YoY"      "nO_Income"           "nO_Income_YoY"       "N_Income"          "N_Income_YoY"
+  #'[13] "N_Income_Rate"       "Shared"          "N_Income_Shared"     "N_Income_Shared_YoY" "NetPrice_Shared"   "NetPrice_totalAsset"
+  #'[19] "FlowRate"            "QuickRate" 
+  
+}
+
+#輸出 小數點後僅兩位
+mutate(body1
+            ,"OR_Rate"=round(as.numeric(OR_Rate),2) 
+            ,"N_Income_Rate"=round(as.numeric(N_Income_Rate),2) 
+            ,"N_Income_Shared"=round(as.numeric(N_Income_Shared),2) 
+            ,"N_Income_Shared_YoY"=round(as.numeric(N_Income_Shared_YoY),2) 
+            ,"NetPrice_Shared"=round(as.numeric(NetPrice_Shared),2) 
+            ,"NetPrice_totalAsset"=round(as.numeric(NetPrice_totalAsset),2) 
+            ,"FlowRate"=round(as.numeric(FlowRate),2) 
+            ,"QuickRate"=round(as.numeric(QuickRate),2) 
+)
+#write.csv file location
+body_path1<-paste0(Upath,"EXdata/FinancialInformation/FIData/StockFI.csv")
+#write.csv file
+write.csv(body1,file = body_path1,fileEncoding="UTF-8")
+
+if (runIDNum>=63) {
+  mutate(body2
+              ,"OR_Rate"=round(as.numeric(OR_Rate),2) 
+              ,"N_Income_Rate"=round(as.numeric(N_Income_Rate),2) 
+              ,"N_Income_Shared"=round(as.numeric(N_Income_Shared),2) 
+              ,"N_Income_Shared_YoY"=round(as.numeric(N_Income_Shared_YoY),2) 
+              ,"NetPrice_Shared"=round(as.numeric(NetPrice_Shared),2) 
+              ,"NetPrice_totalAsset"=round(as.numeric(NetPrice_totalAsset),2) 
+              ,"FlowRate"=round(as.numeric(FlowRate),2) 
+              ,"QuickRate"=round(as.numeric(QuickRate),2) 
+              ,"NetIncome_bTax_Rate"=round(as.numeric(NetIncome_bTax_Rate),2) 
+  )
+  
+  #write.csv file location
+  body_path2<-paste0(Upath,"EXdata/FinancialInformation/FIData/StockFI2.csv")
+  #write.csv file
+  write.csv(body2,file = body_path2,fileEncoding="UTF-8")
+}
+
+  #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+if (FALSE) {  註解
   A<-paste0("OR")
   B<-paste0("OR")
   C<-paste0("OR_Rate")
@@ -67,143 +165,7 @@ for (runIDNum in 1:67) {
   R<-paste0("FlowRate")
   S<-paste0("QuickRate")
   
-  colnames(StockFI)<-c("X","ID_NAME","OR","OR","OR_Rate",
-                       "Income","Income","nO_Income","nO_Income","N_Income","N_Income",
-                       "N_Income_Rate","Shared","N_Income_Shared","N_Income_Shared",
-                       "NetPrice_Shared","NetPrice_totalAsset","FlowRate","QuickRate" )#19欄位
-    c("X","ID_NAME",A,B,C,D,E,G,H,I,J,K,L,M,N,P,Q,R,S)
-  #'runIDNum:1-5 6-62
-  head(StockFI)
   
-  if (runIDNum<=5) {
-    StockFI$"ID_NAME"<-gsub(" ",replacement="",StockFI$"ID_NAME")#取代-全部
-    #sub(" ",replacement="",sub(" ",replacement="",sub(" ",replacement="",StockFI$"ID_NAME")))#取代-一次,一部分-三次還是有可能有空白
-    
-    Id<-substr(StockFI$"ID_NAME", 1, 4)
-    Name<-substr(StockFI$"ID_NAME", 5,8)
-    
-    head(cbind(Id,Name,Time=runID[runIDNum],select(StockFI,-1:-2,-20)))
-    #刪除 X ID_NAME NA
-    #並建立 Id Name Time  
-  }else if (runIDNum<=62) {
-    
-  }else if (runIDNum>=63) {
-    
-  }
-
-  #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-  
-  #用來判斷之欄位
-  #CheckSymbol_col_name<-StockFI[2]
-  
-  class(StockFI[2])
-  class(StockFI$"ID_NAME")
-  
-  U<-strsplit(StockFI$"ID_NAME"," ")
-  NCOL(U)
-  
-  for (ID_NAME_Num in 1:10) {
-    grepl("[0-9}{4}",sapply(U[400], "[",ID_NAME_Num))
-  }
-  if (grepl("[0-9}{4}",U[[400]][2])) {
-    
-  }else if (strsplit(StockFI$"ID_NAME"," ")!="") {
-    
-  }
-  class(U)
-  
-  U
-  U==""
-  length(U[400])
-  is.na(sapply(U[400], "[",5))
-  #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-  #該年度無未公布財報
-  if(namenum!=1){
-    DelteDataNum<-namenum-1
-    FinancialInformation<-select(FinancialInformation,-DelteDataNum)
-    FInum<-FInum-namenum+1
-  }
-  
-  
-  #找公司 整體 產業 未公布財報 所需第幾筆之筆數 
-  FIRowNum<-sapply(count(FinancialInformation),"[",1)
-  DeleteRowNum<-NULL;#財報數據空白  
-  DeleteRowTotalNum<-0;#財報數據空白行數  
-  DeleteRowNum_NA<-NULL;#空白行 
-  DeleteRowTotalNum_NA<-0;#空白行數 
-  CompanyRowNum<-NULL;#有公佈財報的公司         印
-  IndustryRowNum<-NULL;#產業財報數據            印
-  CompanyRowNum_NAFI<-NULL;#沒有公佈財報的公司  印
-  DeleteRowNum_BeforeEnd_StartRow<-1000;
-  BodyRowNum<-NULL
-  for (j in 1:FIRowNum) {
-    #取出 產業 公司 的資料 不含colname
-    CheckSymbol3<-sapply(slice(CheckSymbol_col_FI,j),"[",1)
-    CheckSymbol2<-sapply(slice(CheckSymbol_col_name,j),"[",1)
-    #col reduce-71  FinancialInformation[3]   營       業        收     入      		當季
-    #col reduce-39  FinancialInformation[2]  公  司  名  稱 
-    if(DeleteRowNum_BeforeEnd_StartRow>999){
-      if (is.na(CheckSymbol3)|StartRowIndustry>j|grepl("^\ *$",CheckSymbol3)) {
-        #找NA 空白( "財報數據"  ) 頁首(colname)
-        DeleteRowNum<-cbind(DeleteRowNum,j)
-        DeleteRowTotalNum=DeleteRowTotalNum+1
-        if (grepl("^\ [0-9]{4}",CheckSymbol2)) {#沒有公佈財報的公司
-          CompanyRowNum_NAFI<-cbind(CompanyRowNum_NAFI,j)
-        }else if(is.na(CheckSymbol2)){
-          #找NA 空白(財報數據&  "公司名稱欄位"  ) 頁首(colname)
-          DeleteRowNum_NA<-cbind(DeleteRowNum,j);#小BUG 9出現兩次/*/-*/-/-/
-          DeleteRowTotalNum_NA=DeleteRowTotalNum+1;
-        }
-      }else if(grepl("^[0-9]*$",CheckSymbol3)){#有公佈財報
-        if(grepl("^\ *[0-9]{4}",CheckSymbol2)){#有公佈財報的公司
-          CompanyRowNum<-cbind(CompanyRowNum,j)
-          BodyRowNum<-cbind(BodyRowNum,j)
-        }else if(grepl("^\ {3}[0-9]{2}\ +",CheckSymbol2)){#產業財報數據 runIDNum  1:5
-          IndustryRowNum<-cbind(IndustryRowNum,j)
-          BodyRowNum<-cbind(BodyRowNum,j)
-        }else if(grepl("^[0-9]{2}\ *$",CheckSymbol2)){#產業財報數據
-          #"2015Q2" "01    "
-          IndustryRowNum<-cbind(IndustryRowNum,j)
-          BodyRowNum<-cbind(BodyRowNum,j)
-        }
-      }
-    }
-  }
-  
-  #  body<-slice(FinancialInformation,-DeleteRowNum);#colnum=528to439
-  body<-slice(FinancialInformation,BodyRowNum);#colnum=528to439
-  body_CompanyRowNum<-slice(FinancialInformation,CompanyRowNum);#有公佈財報的公司               印  439
-  body_IndustryRowNum<-slice(FinancialInformation,IndustryRowNum);#產業財報數據                 印  419
-  if(is.null(CompanyRowNum_NAFI)!=1){
-    body_CompanyRowNum_NAFI<-slice(CheckSymbol_col_name,CompanyRowNum_NAFI);#沒有公佈財報的公司       印   20
-  }
-  #View(body);
-  #View(body_CompanyRowNum);
-  #View(body_IndustryRowNum);
-  
-  #write.csv file location
-  body_path<-paste0(Upath,"EXdata/FinancialInformation/FIData/",runID[runIDNum],".csv")
-  body_CompanyRowNum_path<-paste0(Upath,"EXdata/FinancialInformation/FIData/",runID[runIDNum],"_Company.csv")
-  body_IndustryRowNum_path<-paste0(Upath,"EXdata/FinancialInformation/FIData/",runID[runIDNum],"_Industry.csv")
-  body_CompanyRowNum_NAFI_path<-paste0(Upath,"EXdata/FinancialInformation/FIData/",runID[runIDNum],"_Company_NAFI.csv")
-  
-  
-  #write.csv file
-  write.csv(body,file = body_path)
-  write.csv(body_CompanyRowNum,file = body_CompanyRowNum_path)
-  write.csv(body_IndustryRowNum,file = body_IndustryRowNum_path)
-  if(is.null(CompanyRowNum_NAFI)!=1){
-    write.csv(body_CompanyRowNum_NAFI,file = body_CompanyRowNum_NAFI_path)
-  }
-  
-  #顯示每次所需時間(秒)
-  runtime<-proc.time()-starttime
-  print(paste(runID[runIDNum]," , FINISHED!"," ( ",round(runtime[1],2),round(runtime[2],2),round(runtime[3],2)," ) "))  
+  c("X","ID_NAME",A,B,C,D,E,G,H,I,J,K,L,M,N,P,Q,R,S)
 }
-
-
-runtime_all<-proc.time()-starttime_all
-print(starttime_all)
-print(proc.time())
-print(runtime_all)
-
+ 
