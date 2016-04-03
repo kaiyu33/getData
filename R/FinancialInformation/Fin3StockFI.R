@@ -2,8 +2,7 @@
 #'StockFI
 #'
 #'繼承自:TotalTable
-#'
-#'階段一:將各財報會及於一個CSV檔
+#'階段一:將各財報會及於一個CSV檔 僅收納前兩筆及欄位名
 #'從"F:/EXdata/FinancialInformation/FIData/TotalTable ' 1.xls ' "
 #'可見該表分成三個時期
 #'1999Q1-2000Q1-19欄
@@ -14,13 +13,18 @@
 #'runIDNum:63-67
 #'Net Income before Tax-3欄位-當季,YoY,Rate
 #'
-#'
+#'繼承自:本檔:StockFI
+#'階段二:將各財報會及於一個CSV檔
+
+#儲存及改變環境設定
+old.options=options()
+options(stringsAsFactors = FALSE)
 
 #install.packages("xlsx")
 library(xlsx)
 library(dplyr)
 #disk location
-Upath<-paste0("D:/")
+Upath<-paste0("F:/")
 
 runID<-NULL
 for (file_year in 1999:2015) {
@@ -31,6 +35,10 @@ for (file_year in 1999:2015) {
 runIDNum<-1
 #runIDNum<-6
 #runIDNum<-63
+
+#body1<-data.frame(stringsAsFactors = FALSE)
+#有沒有輸出都一樣
+
 body1<-NULL
 body2<-NULL
 for (runIDNum in 1:67) {
@@ -108,23 +116,9 @@ for (runIDNum in 1:67) {
 }
 
 #輸出 小數點後僅兩位
-mutate(body1
-            ,"OR_Rate"=round(as.numeric(OR_Rate),2) 
-            ,"N_Income_Rate"=round(as.numeric(N_Income_Rate),2) 
-            ,"N_Income_Shared"=round(as.numeric(N_Income_Shared),2) 
-            ,"N_Income_Shared_YoY"=round(as.numeric(N_Income_Shared_YoY),2) 
-            ,"NetPrice_Shared"=round(as.numeric(NetPrice_Shared),2) 
-            ,"NetPrice_totalAsset"=round(as.numeric(NetPrice_totalAsset),2) 
-            ,"FlowRate"=round(as.numeric(FlowRate),2) 
-            ,"QuickRate"=round(as.numeric(QuickRate),2) 
-)
-#write.csv file location
-body_path1<-paste0(Upath,"EXdata/FinancialInformation/FIData/StockFI.csv")
-#write.csv file
-write.csv(body1,file = body_path1,fileEncoding="UTF-8")
-
-if (runIDNum>=63) {
-  mutate(body2
+body1<-mutate(body1
+              #'加上 body1<- 較為嚴謹 比較不會有位知情況發生
+              #'EX:部分欄位未改成 小數點後僅兩位
               ,"OR_Rate"=round(as.numeric(OR_Rate),2) 
               ,"N_Income_Rate"=round(as.numeric(N_Income_Rate),2) 
               ,"N_Income_Shared"=round(as.numeric(N_Income_Shared),2) 
@@ -133,7 +127,25 @@ if (runIDNum>=63) {
               ,"NetPrice_totalAsset"=round(as.numeric(NetPrice_totalAsset),2) 
               ,"FlowRate"=round(as.numeric(FlowRate),2) 
               ,"QuickRate"=round(as.numeric(QuickRate),2) 
-              ,"NetIncome_bTax_Rate"=round(as.numeric(NetIncome_bTax_Rate),2) 
+)
+#write.csv file location
+body_path1<-paste0(Upath,"EXdata/FinancialInformation/FIData/StockFI.csv")
+#write.csv file
+write.csv(body1,file = body_path1,fileEncoding="UTF-8")
+
+if (runIDNum>=63) {
+  body2<-mutate(body2
+                #'加上 body2<- 較為嚴謹 比較不會有位知情況發生
+                #'EX:部分欄位未改成 小數點後僅兩位
+                ,"OR_Rate"=round(as.numeric(OR_Rate),2) 
+                ,"N_Income_Rate"=round(as.numeric(N_Income_Rate),2) 
+                ,"N_Income_Shared"=round(as.numeric(N_Income_Shared),2) 
+                ,"N_Income_Shared_YoY"=round(as.numeric(N_Income_Shared_YoY),2) 
+                ,"NetPrice_Shared"=round(as.numeric(NetPrice_Shared),2) 
+                ,"NetPrice_totalAsset"=round(as.numeric(NetPrice_totalAsset),2) 
+                ,"FlowRate"=round(as.numeric(FlowRate),2) 
+                ,"QuickRate"=round(as.numeric(QuickRate),2) 
+                ,"NetIncome_bTax_Rate"=round(as.numeric(NetIncome_bTax_Rate),2) 
   )
   
   #write.csv file location
@@ -141,6 +153,9 @@ if (runIDNum>=63) {
   #write.csv file
   write.csv(body2,file = body_path2,fileEncoding="UTF-8")
 }
+
+#還原原先環境設定
+options(old.options)
 
   #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 if (FALSE) {  註解
@@ -164,7 +179,6 @@ if (FALSE) {  註解
   
   R<-paste0("FlowRate")
   S<-paste0("QuickRate")
-  
   
   c("X","ID_NAME",A,B,C,D,E,G,H,I,J,K,L,M,N,P,Q,R,S)
 }
