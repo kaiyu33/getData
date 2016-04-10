@@ -4,6 +4,7 @@ library(dplyr)
 #disk location
 Upath<-paste0("F:/")#settinggggggggggggggggggggggggggggggggggggggggggggggggggggg
 
+##date
 # # So for dates (post-1901) from Windows Excel
 # as.Date(42468, origin = "1899-12-30") # 2016-04-08
 # as.numeric(as.Date("2016-04-08"))
