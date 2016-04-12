@@ -29,6 +29,7 @@ for (getStockNumforCT_RowNum in 1:length(getStockNumforCT_DIR)) {
   getStockNum<-paste0("'",substr(getStockNumforCT_DIR[getStockNumforCT_RowNum],1,4))
   
   body1<-NULL
+  for (DIRnum in length(DIR):1) {#settinggggggggggggggggggggggggggggggggggggggggggggggggggggglength(DIR)改成58
     
     getStockNumCT_path2<-paste0(Upath,"EXdata/CreditTransactions/",DIR[DIRnum])
     #read file
