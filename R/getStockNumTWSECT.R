@@ -25,11 +25,11 @@ bodyNA<-NULL
 getStockNumforCT_path<-paste0(Upath,"EXdata/FinancialInformation/FIData/getStockNumFI/")
 getStockNumforCT_DIR<-dir(getStockNumforCT_path)
 # getStockNumforCT_RowNum<-1
-for (getStockNumforCT_RowNum in 1:length(getStockNumforCT_DIR)) {
+for (getStockNumforCT_RowNum in 59:length(getStockNumforCT_DIR)) {#1改成58     7
   getStockNum<-paste0("'",substr(getStockNumforCT_DIR[getStockNumforCT_RowNum],1,4))
   
   body1<-NULL
-  for (DIRnum in length(DIR):1) {#settinggggggggggggggggggggggggggggggggggggggggggggggggggggglength(DIR)改成58
+  for (DIRnum in length(DIR):1) {#settinggggggggggggggggggggggggggggggggggggggggggggggggggggg
     
     getStockNumCT_path2<-paste0(Upath,"EXdata/CreditTransactions/",DIR[DIRnum])
     #read file
@@ -122,6 +122,17 @@ for (getStockNumforCT_RowNum in 1:length(getStockNumforCT_DIR)) {
 }
 body_path_NA<-paste0(Upath,"EXdata/CreditTransactions/CTData/getStockNumCT/total.csv")
 write.csv(bodyNA,file = body_path_NA,fileEncoding="UTF-8") 
+# 
+# [4992,] "4992"        "'1408"    
+# [4993,] "4993"        "'1408"    
+# [4994,] "4994"        "'1408"    
+# [4995,] "4995"        "'1408"    
+# [4996,] "4996"        "'1408"    
+# [4997,] "4997"        "'1408"    
+# [4998,] "4998"        "'1408"    
+# [4999,] "4999"        "'1408"    
+# [5000,] "5000"        "'1408"    
+
 
 runtime<-proc.time()-starttime
 cat(paste(getStockNum,body1[RowNumTotal_body1,3],"\tFINISHED !!! (",round(runtime[1],2),"\t",round(runtime[2],2),"\t",round(runtime[3],2),")\n" ))
