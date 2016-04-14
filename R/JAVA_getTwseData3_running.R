@@ -1,5 +1,5 @@
 #disk location
-Upath<-paste0("F:/")
+Upath<-paste0("D:/")
 
 k=94
 #file location with complete data
@@ -26,15 +26,7 @@ csvv_dataframe<-t(as.matrix(csvv_dataframe))
 rownames(csvv_dataframe)<-c(2:(length(csvv)+1))
 colnames(csvv_dataframe)<-c(1:24)
 
-for (i in 1:length(csvv)) {
-  for (j in 1:length(csvv[[1]])) {
-    ifelse(grepl("\s",csvv_dataframe[i,j]),csvv_dataframe[i,j]<-"0",)####NNNNNNNNNNNNNNNNOOOOOOOOOOOOOOOOOO<U+00A0>
-  }
-}
-grepl("[ ]*"," ")
 
-# is.integer(csvv_dataframe[1,3])
-# is.name(csvv_dataframe[1,3])
 
 #還是分開寫 尤其是中文  否則Error: VECTOR_ELT() can only be applied to a 'list', not a 'raw'
 cname<-c("num","公司代號","公司名稱","股利所屬年度","權利分派基準日",
@@ -53,11 +45,52 @@ head(csvv_dataframe)
 
 new_path00<-paste0(Upath,"EXdata/JAVA_getTwseData3/",k,"YearCouponCCC.csv")
 write.csv(csvv_dataframe,file = new_path00)
+##########################################################################################################################
+csvv<-read.csv(new_path00,stringsAsFactors = FALSE,encoding="big5")
+
+csvv[3,7]
+
+
 #colnames(A)<-c("ID","name","C_Year","C_BaseDate","C_Stock_Earnings","C_Stock_Other","C_Stock_ExchangeDate",""
-#""
+
+for (i in 1:length(csvv)) {
+  for (j in 1:length(csvv[[1]])) {
+    # ifelse(grepl("\s",csvv_dataframe[i,j]),csvv_dataframe[i,j]<-"0",)####NNNNNNNNNNNNNNNNOOOOOOOOOOOOOOOOOO<U+00A0>
+    sub("00A0",replacement="",A[i,j])
+    A[i,j]
+    #  if("<U+00A0>"==csvv[i,j]){
+    #   # csvv[i,j]<-"0"
+    #   n<-paste0("csvv[",i,",",j,"]")
+    #   assign(n,"0")
+    # }
+  }
+}
+print("<U+00A0>")
+grepl('<U+00A0>',csvv[3,7])
+csvv("<U+00A0>"==csvv[i,j)<-"0"
+
+("<U+00A0>"==csvv[i,j])
+stri_escape_unicode("A")
+csvv_dataframe
+
+for (i in 1:length(csvv)) {
+  for (j in 1:length(csvv[[1]])) {
+    csvv_dataframe[2,6]<-""
+  }
 }
 
-A<-read.csv(new_path00)
+等價於[ \f\n\r\t\v]。
+is.n(csvv_dataframe[2,8])
+csvv_dataframe(grep("\s",A[i,j]))
+grepl("[ ]*"," ")
+
+
+grepl("<U+00A0>",csvv_dataframe[i,j])
+# is.integer(csvv_dataframe[1,3])
+# is.name(csvv_dataframe[1,3])
+
+gsub("<U+00A0>",replacement="",A[i,j])
+
 
 for (j in 1:length(A)) {
   for (i in 1:length(A[[1]])) {
@@ -72,3 +105,16 @@ for (j in 1:length(A)) {
     
   }
 }
+
+
+
+#####################################################
+
+#disk location
+Upath<-paste0("D:/")
+
+k=94
+#file location with complete data
+x1_path<-paste0(Upath,"EXdata/JAVA_getTwseData3/",k,"YearCoupon.txt")
+#read file
+csv2<-read.csv2(x1_path,encoding="UTF-8")

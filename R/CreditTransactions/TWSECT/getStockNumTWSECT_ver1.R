@@ -1,6 +1,7 @@
-#'getStockNumTWSECT
+#'getStockNumTWSECT_ver1
 #'
 #'繼承自:getStockNumCT
+#'繼承自:getStockNumTWSECT
 #'
 #'繼承自:crawler otc credirtransfer
 #'
@@ -25,7 +26,7 @@ bodyNA<-NULL
 getStockNumforCT_path<-paste0(Upath,"EXdata/FinancialInformation/FIData/getStockNumFI/")
 getStockNumforCT_DIR<-dir(getStockNumforCT_path)
 # getStockNumforCT_RowNum<-1
-for (getStockNumforCT_RowNum in 59:length(getStockNumforCT_DIR)) {#1改成58     7
+for (getStockNumforCT_RowNum in 1:length(getStockNumforCT_DIR)) {#1改成58     7
   getStockNum<-paste0("'",substr(getStockNumforCT_DIR[getStockNumforCT_RowNum],1,4))
   
   body1<-NULL
@@ -108,15 +109,16 @@ for (getStockNumforCT_RowNum in 59:length(getStockNumforCT_DIR)) {#1改成58    
       
       #write.csv file
       write.csv(body1,file = body_path1,fileEncoding="UTF-8") 
-    }else{
-      bodyNARow_num<-bodyNARow_num+1
-      bodyNARow<-cbind(bodyNARow_num,getStockNum)
-      bodyNA<-rbind(bodyNA,bodyNARow)
-    }
-    # #顯示每次所需時間(秒)
-    # runtime<-proc.time()-starttime
+    } 
+    #顯示每次所需時間(秒)
+    runtime<-proc.time()-starttime
   }
-  cat(paste(getStockNum,body1[RowNumTotal_body1,3],"\tFINISHED !!! ( " ,getStockNumforCT_RowNum," )\n"
+  if(is.null(body1)==1){
+    bodyNARow_num<-bodyNARow_num+1
+    bodyNARow<-cbind(bodyNARow_num,getStockNum)
+    bodyNA<-rbind(bodyNA,bodyNARow)
+  }
+  cat(paste(getStockNum,body1[1,3],"\tFINISHED !!! ( " ,getStockNumforCT_RowNum," )\n"
             # ,"(",round(runtime[1],2),"\t",round(runtime[2],2),"\t",round(runtime[3],2),")\n" 
   ))
 }
@@ -135,5 +137,5 @@ write.csv(bodyNA,file = body_path_NA,fileEncoding="UTF-8")
 
 
 runtime<-proc.time()-starttime
-cat(paste(getStockNum,body1[RowNumTotal_body1,3],"\tFINISHED !!! (",round(runtime[1],2),"\t",round(runtime[2],2),"\t",round(runtime[3],2),")\n" ))
+cat(paste(getStockNum,body1[1,3],"\tFINISHED !!! (",round(runtime[1],2),"\t",round(runtime[2],2),"\t",round(runtime[3],2),")\n" ))
 #大迴圈 END  EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
