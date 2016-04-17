@@ -1,5 +1,5 @@
 #disk location
-Upath<-paste0("D:/")
+Upath<-paste0("F:/")
 
 k=94
 #file location with complete data
@@ -40,29 +40,52 @@ cname<-c("num","公司代號","公司名稱","股利所屬年度","權利分派�
          "董監酬勞(元)","公告日期","公告時間","普通股每股面額")
 csvv_dataframe<-rbind(cname,csvv_dataframe)
 
-View(csvv_dataframe)
-head(csvv_dataframe)
+# View(csvv_dataframe)
+# head(csvv_dataframe)
 
 new_path00<-paste0(Upath,"EXdata/JAVA_getTwseData3/",k,"YearCouponCCC.csv")
-write.csv(csvv_dataframe,file = new_path00)
+write.csv(csvv_dataframe,file = new_path00,fileEncoding="UTF-8")
 ##########################################################################################################################
-csvv<-read.csv(new_path00,stringsAsFactors = FALSE,encoding="big5")
+#disk location
+Upath<-paste0("F:/")
+k=94
+new_path00<-paste0(Upath,"EXdata/JAVA_getTwseData3/",k,"YearCouponCCC.csv")
+csvv<-read.csv(new_path00,stringsAsFactors = FALSE,fileEncoding="UTF-8")
 
+csvv2<-mutate(csvv,"X66"=sub("<U+00A0>",replacement="",csvv$X6))
+
+csvv[i,j]<-grepl("<U[+]00A0>",csvv[i,j])
+i=3
+  j=7
+  
+  getSymbols
+  
+  packages <- c(
+    "Rcpp",
+    "rjson"
+  )
+  sapply(packages, function(a) install.packages(a))
+  
 csvv[3,7]
+cs<-sub("<U+00A0>",replacement="",csvv)
 
-
+cs2<-NULL
+for (i in 1:25) {
+cs2<-c  
+}
+cs2[[1]]
 #colnames(A)<-c("ID","name","C_Year","C_BaseDate","C_Stock_Earnings","C_Stock_Other","C_Stock_ExchangeDate",""
 
-for (i in 1:length(csvv)) {
-  for (j in 1:length(csvv[[1]])) {
-    # ifelse(grepl("\s",csvv_dataframe[i,j]),csvv_dataframe[i,j]<-"0",)####NNNNNNNNNNNNNNNNOOOOOOOOOOOOOOOOOO<U+00A0>
-    sub("00A0",replacement="",A[i,j])
-    A[i,j]
-    #  if("<U+00A0>"==csvv[i,j]){
-    #   # csvv[i,j]<-"0"
-    #   n<-paste0("csvv[",i,",",j,"]")
-    #   assign(n,"0")
-    # }
+CA<-as
+
+for (j in 1:length(csvv)) {
+  for (i in 1:length(csvv[[1]])) {
+    if(grepl("<U[+]00A0>",csvv[i,j])){
+      k<-i;l<-j
+      function(k,l) {csvv[k,l]="0"}
+      # assignMethodsMetaData()
+    }
+    # csvv(grep("<U[+]00A0>",csvv[i,j]))<-"0"
   }
 }
 print("<U+00A0>")

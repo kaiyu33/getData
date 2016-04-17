@@ -1,0 +1,36 @@
+基本面
+想嘗試的邏輯：
+1.稅後淨利>7500萬美元
+2.5年ROE>15%
+3.上市上櫃>2年
+4.董監持股>20%
+5.200%>盈再率>80%
+*(長期投資4 + 固定資產4 – 長期投資0 – 固定資產0) / 淨利1 + 淨利2 + 淨利3 + 淨利4
+*連續四年來，公司在長期投資及固定資產的增加金額，除以淨利總和，所以盈再率，其實就是衡量公司保留盈餘再投資的指標
+6.5年配息率>40%
+
+需要的東西：
+FI:
+[1] "X.1"                 "X"                   "Id"                  "Name"                "Time"               
+ [6] "OR"                  "OR_YoY"              "OR_Rate"             "Income"              "Income_YoY"         
+[11] "nO_Income"           "nO_Income_YoY"       "N_Income"            "N_Income_YoY"        "N_Income_Rate"      
+[16] "Shared"              "N_Income_Shared"     "N_Income_Shared_YoY" "NetPrice_Shared"     "NetPrice_totalAsset"
+[21] "FlowRate"            "QuickRate"          
+
+1.稅後淨利->FI[13]
+2.ROE(稅後更好)->FI[17]*FI[20]
+3.上市時間->BasicImformation
+4.董監持股比例->未取得資料
+5.長期投資->未取得資料
+6.固定資產->未取得資料 是指不動產??
+7.配息->有資料 尚未處理完畢
+
+盤整或趨勢
+想嘗試的邏輯：
+1.GDP與大盤指數比對
+2.GNP與大盤指數比對
+
+需要的東西：
+1.GDP
+2.GNP
+3.大盤指數

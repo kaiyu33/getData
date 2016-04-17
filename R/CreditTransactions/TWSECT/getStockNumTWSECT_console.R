@@ -1,4 +1,4 @@
-#'getStockNumTWSECT
+﻿#'getStockNumTWSECT
 #'執行結果
 '1101 台泥 	FINISHED !!! (  1  )
 '1102 亞泥 	FINISHED !!! (  2  )
