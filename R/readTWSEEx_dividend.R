@@ -2,12 +2,12 @@
 #'
 #'前身:JAVA_getTwseData3
 
-#disk location#TW50
-Upath<-paste0("D:/")
-#file location
-tw50_dir_path<-paste0(Upath,"EXdata/tw0050.csv")
-#read file
-getStockNumtw50<-read.csv(tw50_dir_path,stringsAsFactors = FALSE)# NOT UTF-8
+# #disk location#TW50
+# Upath<-paste0("D:/")
+# #file location
+# tw50_dir_path<-paste0(Upath,"EXdata/tw0050.csv")
+# #read file
+# getStockNumtw50<-read.csv(tw50_dir_path,stringsAsFactors = FALSE)# NOT UTF-8
 
 #disk location#TW50
 Upath<-paste0("D:/")
@@ -53,16 +53,16 @@ colnames(Ex_dividend.104)<-c("num","ID","name","dividend_Y","basicDate","dividen
   getNum<-substr(tw_dir[i],1,4)
   l<-0
   for (year in 94:104) {
-    readFile<-paste("Ex_dividend",k,sep=".")
-    for (j in 1:nrow(get(paste("Ex_dividend",k,sep=".")))) {#待檔案筆數
-      if (get(paste("Ex_dividend",k,sep="."))[j,2]==getNum) {#找相同代號
+    readFile<-paste("Ex_dividend",year,sep=".")
+    for (j in 1:nrow(get(paste("Ex_dividend",year,sep=".")))) {#待檔案筆數
+      if (get(paste("Ex_dividend",year,sep="."))[j,2]==getNum) {#找相同代號
         getNumFile<-paste0("TW.",getNum)
         if(l>0){#已有資料
-          # assign(getNumFile,get(paste("Ex_dividend",k,sep="."))[j,])
-          assign(getNumFile,rbind(get(getNumFile),get(paste("Ex_dividend",k,sep="."))[j,]))
+          # assign(getNumFile,get(paste("Ex_dividend",year,sep="."))[j,])
+          assign(getNumFile,rbind(get(getNumFile),get(paste("Ex_dividend",year,sep="."))[j,]))
         }else if (l==0) {#第一次
           l<-1
-          assign(getNumFile,get(paste("Ex_dividend",k,sep="."))[j,])
+          assign(getNumFile,get(paste("Ex_dividend",year,sep="."))[j,])
         }
         
       }
