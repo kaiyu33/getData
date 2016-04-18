@@ -1,7 +1,7 @@
 .First<-function(){
   #建立自動執行
   #啟動
-  setwd("F:/GitHub/getData/R")
+  setwd("D:/GitHub/getData/R")
   # library(xlsx)
   # library(quantmod)
   library(dplyr)
