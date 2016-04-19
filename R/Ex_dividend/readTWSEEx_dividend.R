@@ -3,7 +3,7 @@
 #'前身:JAVA_getTwseData3
 
 #disk location
-Upath<-paste0("F:/")
+Upath<-paste0("D:/")
 
 # #file location#TW50
 # tw50_dir_path<-paste0(Upath,"EXdata/tw0050.csv")
