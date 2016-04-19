@@ -10,7 +10,7 @@
 #'前身:JAVA_getTwseData3
 
 #disk location
-Upath<-paste0("D:/")
+Upath<-paste0("F:/")
 
 #file location
 BD_dir_path<-paste0(Upath,"data/new/tw50/")
@@ -126,7 +126,6 @@ EDxtsS<-xts(as.matrix(ys[,-1]),
            #as.POSIXct(fr[,1], tz=Sys.getenv("TZ")),
            src='myData',updated=Sys.time())
 
-# merge(yc, ys, by = "Date")
 EDxts<-cbind(EDxtsS,EDxtsC)
 for (m in 1:nrow(EDxts)) {
   for (n in 1:ncol(EDxts)) {
@@ -144,17 +143,43 @@ BDxts<-xts(as.matrix(x[,-1]),
            #as.POSIXct(fr[,1], tz=Sys.getenv("TZ")),
            src='myData',updated=Sys.time())
 BDxts<-BDxts["2005-01-01/2016-02-29"]
-for(r in nrow(EDxts):1){#除權息
-    if(r>1){
-      assign(paste0("ReED_BD",r),(as.numeric(BDxts[paste0(time(EDxts[r-1,]),"/",time(EDxts[r,])-1)]$Close)-as.numeric(EDxts[r,4]))/(1+as.numeric(EDxts[r,2])))
-    }else if(r==1){
-      assign(paste0("ReED_BD",r),(as.numeric(BDxts[paste0("2005-01-01","/",time(EDxts[r,])-1)]$Close)-as.numeric(EDxts[r,4]))/(1+as.numeric(EDxts[r,2])))
+# 
+# for(r in nrow(EDxts):1){#除權息 以現在為基準 故有負數的出現
+#     if(r>1){
+#       assign(paste0("ReED_BD",r),(as.numeric(BDxts[paste0(time(EDxts[r-1,]),"/",time(EDxts[r,])-1)]$Close)-as.numeric(EDxts[r,4]))/(1+as.numeric(EDxts[r,2])))
+#     }else if(r==1){
+#       assign(paste0("ReED_BD",r),(as.numeric(BDxts[paste0("2005-01-01","/",time(EDxts[r,])-1)]$Close)-as.numeric(EDxts[r,4]))/(1+as.numeric(EDxts[r,2])))
+#     }
+#     if(r<nrow(EDxts)){
+#       for (s in (r+1):nrow(EDxts)) {
+#         assign(paste0("ReED_BD",r),(get(paste0("ReED_BD",r))-as.numeric(EDxts[s,4]))/(1+as.numeric(EDxts[s,2])))
+#       }
+#     }
+# }
+# 
+# ls(pattern = "^ReED_BD")
+
+assign(paste0("ReED_BD",0),as.numeric(BDxts[paste0("2005-01-01","/",time(EDxts[1,])-1)]$Close))
+for(r in 1:nrow(EDxts)){#除權息 改以 以2005-01-01為基準
+  if(r<nrow(EDxts)){
+    assign(paste0("ReED_BD",r),
+           (
+             as.numeric(BDxts[paste0(time(EDxts[r,]),"/",time(EDxts[r+1,])-1)]$Close)*(1+as.numeric(EDxts[r,2]))+as.numeric(EDxts[r,4])
+           )
+           )
+  }else if(r==nrow(EDxts)){
+    assign(paste0("ReED_BD",r),(
+      as.numeric(BDxts[paste0(time(EDxts[r,]),"/","2016-02-29")]$Close)*(1+as.numeric(EDxts[r,2]))+as.numeric(EDxts[r,4])
+    )
+    )
+  }
+  if(r>1){
+    for (s in (r-1):1) {
+      assign(paste0("ReED_BD",r),(
+        get(paste0("ReED_BD",r))*(1+as.numeric(EDxts[s,2]))+as.numeric(EDxts[s,4])
+      ))
     }
-    if(r<nrow(EDxts)){
-      for (s in (r+1):nrow(EDxts)) {
-        assign(paste0("ReED_BD",r),(get(paste0("ReED_BD",r))-as.numeric(EDxts[s,4]))/(1+as.numeric(EDxts[s,2])))
-      }
-    }
+  }
 }
 
 ls(pattern = "^ReED_BD")
