@@ -10,7 +10,7 @@
 #'前身:JAVA_getTwseData3
 
 #disk location
-Upath<-paste0("F:/")
+Upath<-paste0(substr(getwd(),1,1),":/")
 
 #file location
 BD_dir_path<-paste0(Upath,"data/new/tw50/")
@@ -113,6 +113,7 @@ for (i in 1:length(BD_dir)) {
   assign(paste("ReED_ED_C",substr(BD_dir[i],1,4),sep="."),getDataC)
   assign(paste("ReED_ED_S",substr(BD_dir[i],1,4),sep="."),getDataS)
 }
+#################################################################################################################
 y<-get(paste("ReED_ED",substr(BD_dir[i],1,4),sep="."))
 yc<-get(paste("ReED_ED_C",substr(BD_dir[i],1,4),sep="."))
 ys<-get(paste("ReED_ED_S",substr(BD_dir[i],1,4),sep="."))
@@ -143,8 +144,79 @@ BDxts<-xts(as.matrix(x[,-1]),
            #as.POSIXct(fr[,1], tz=Sys.getenv("TZ")),
            src='myData',updated=Sys.time())
 BDxts<-BDxts["2005-01-01/2016-02-29"]
+
+
+#################################################################################################################
+#'output:
+#'EDxtsC
+#'EDxtsS
+#'EDxts
+#'BDxts
+
+# #################################################################################################################
+# #取需要還原除權息 距今最近的一天的價格
+# EDxtsC_p<-NULL
+# ED_C_r<-NULL
+# # t=10
+# for (t in 1:nrow(EDxtsC)) {
+#   # if(EDxtsC[t,1]=="C"){
+#   z<-BDxts[paste0("/",time(EDxtsC[t,1]))]$Close[length(BDxts[paste0("/",time(EDxtsC[t,1]))]$Close)]
+#   EDxtsC_p<-rbind(EDxtsC_p,z)
+#   ED_C_r<-rbind(ED_C_r,
+#                   # (as.numeric(EDxtsC[t,3])-as.numeric(EDxtsC[t,2]))/as.numeric(EDxtsC[t,3])
+#                 (as.numeric(z)-as.numeric(EDxtsC[t,2]))/as.numeric(z)
+#                   # (as.numeric(BDxts[paste0("/",time(EDxtsC[t,1]))]$Close[length(BDxts[paste0("/",time(EDxtsC[t,1]))]$Close)])-as.numeric(EDxtsC[t,2]))/as.numeric(BDxts[paste0("/",time(EDxtsC[t,1]))]$Close[length(BDxts[paste0("/",time(EDxtsC[t,1]))]$Close)])
+#   )
+# # }
+# }
+# EDxtsC_p2<-xts(as.matrix(EDxtsC_p[]),
+#                as.Date(yc[,1]),
+#                #as.POSIXct(fr[,1], tz=Sys.getenv("TZ")),
+#                src='myData',updated=Sys.time())
 # 
-# for(r in nrow(EDxts):1){#除權息 以現在為基準 故有負數的出現
+# EDxtsC_r<-xts(as.matrix(ED_C_r[]),
+#             as.Date(yc[,1]),
+#             #as.POSIXct(fr[,1], tz=Sys.getenv("TZ")),
+#             src='myData',updated=Sys.time())
+# EDxts2<-cbind(EDxtsS,EDxtsC,EDxtsC_p2,EDxtsC_r)
+# EDxts2[,1]<-"S"
+# EDxts2[,3]<-"C"
+# 
+# for (m in 1:nrow(EDxts2)) {
+#   for (n in 1:ncol(EDxts2)) {
+#     if (is.na(EDxts2[m,n])) {
+#       0->EDxts2[m,n]
+#     }
+#   }
+# }
+# 
+# 
+# for(r in nrow(EDxts2):1){#除權息 以現在為基準價 故有負數的出現
+#     if(r>1){
+#       assign(paste0("ReED_BD",r),
+#              as.numeric(BDxts[paste0(time(EDxts2[r-1,]),"/",time(EDxts2[r,])-1)]$Close)*as.numeric(EDxts2[r,6])
+#              /(1+as.numeric(EDxts2[r,2]))
+#              )
+#     }else if(r==1){
+#       assign(paste0("ReED_BD",r),
+#              as.numeric(BDxts[paste0("2005-01-01","/",time(EDxts2[r,])-1)]$Close)*as.numeric(EDxts2[r,6])
+#              /(1+as.numeric(EDxts2[r,2]))
+#              )
+#     }
+#     if(r<nrow(EDxts2)){
+#       for (s in (r+1):nrow(EDxts2)) {
+#         assign(paste0("ReED_BD",r),
+#                get(paste0("ReED_BD",r))*as.numeric(EDxts2[r,6])
+#                /(1+as.numeric(EDxts2[r,2]))
+#                )
+#       }
+#     }
+# }
+# ls(pattern = "^ReED_BD")
+# #################################################################################################################
+
+
+# for(r in nrow(EDxts):1){#除權息 以現在為基準價 故有負數的出現
 #     if(r>1){
 #       assign(paste0("ReED_BD",r),(as.numeric(BDxts[paste0(time(EDxts[r-1,]),"/",time(EDxts[r,])-1)]$Close)-as.numeric(EDxts[r,4]))/(1+as.numeric(EDxts[r,2])))
 #     }else if(r==1){
@@ -155,34 +227,23 @@ BDxts<-BDxts["2005-01-01/2016-02-29"]
 #         assign(paste0("ReED_BD",r),(get(paste0("ReED_BD",r))-as.numeric(EDxts[s,4]))/(1+as.numeric(EDxts[s,2])))
 #       }
 #     }
-# }
-# 
+# } 
 # ls(pattern = "^ReED_BD")
 
-assign(paste0("ReED_BD",0),as.numeric(BDxts[paste0("2005-01-01","/",time(EDxts[1,])-1)]$Close))
-for(r in 1:nrow(EDxts)){#除權息 改以 以2005-01-01為基準
-  if(r<nrow(EDxts)){
-    assign(paste0("ReED_BD",r),
-           (
-             as.numeric(BDxts[paste0(time(EDxts[r,]),"/",time(EDxts[r+1,])-1)]$Close)*(1+as.numeric(EDxts[r,2]))+as.numeric(EDxts[r,4])
-           )
-           )
-  }else if(r==nrow(EDxts)){
-    assign(paste0("ReED_BD",r),(
-      as.numeric(BDxts[paste0(time(EDxts[r,]),"/","2016-02-29")]$Close)*(1+as.numeric(EDxts[r,2]))+as.numeric(EDxts[r,4])
-    )
-    )
-  }
-  if(r>1){
-    for (s in (r-1):1) {
-      assign(paste0("ReED_BD",r),(
-        get(paste0("ReED_BD",r))*(1+as.numeric(EDxts[s,2]))+as.numeric(EDxts[s,4])
-      ))
-    }
-  }
-}
-
-ls(pattern = "^ReED_BD")
+# assign(paste0("ReED_BD",0),as.numeric(BDxts[paste0("2005-01-01","/",time(EDxts[1,])-1)]$Close))
+# for(r in 1:nrow(EDxts)){#除權息 改以 以2005-01-01為基準價
+#   if(r<nrow(EDxts)){
+#     assign(paste0("ReED_BD",r),(as.numeric(BDxts[paste0(time(EDxts[r,]),"/",time(EDxts[r+1,])-1)]$Close)*(1+as.numeric(EDxts[r,2]))+as.numeric(EDxts[r,4])))
+#   }else if(r==nrow(EDxts)){
+#     assign(paste0("ReED_BD",r),(as.numeric(BDxts[paste0(time(EDxts[r,]),"/","2016-02-29")]$Close)*(1+as.numeric(EDxts[r,2]))+as.numeric(EDxts[r,4])))
+#   }
+#   if(r>1){
+#     for (s in (r-1):1) {
+#       assign(paste0("ReED_BD",r),(get(paste0("ReED_BD",r))*(1+as.numeric(EDxts[s,2]))+as.numeric(EDxts[s,4])))
+#     }
+#   }
+# }
+# ls(pattern = "^ReED_BD")
 
 # for(r in nrow(EDxts):1){
 #   if(EDxts[r,1]=="S"&EDxts[r,3]=="C" ){#除權息
